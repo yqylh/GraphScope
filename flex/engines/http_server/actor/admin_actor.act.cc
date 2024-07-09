@@ -1508,22 +1508,23 @@ seastar::future<admin_query_result> admin_actor::create_vertex(
           auto iter = edge_insert.find(input_property);
           if (iter == edge_insert.end()) {
             throw std::runtime_error("missing " + input_property);
-          } 
-          if (input_property == "properties") {
-            if ((*iter).is_array() == false) {
-              throw std::runtime_error("properties should be an array");
-            }
-            if ((*iter).size() != 1) {
-              throw std::runtime_error("size should be 1(only support single property edge)");
-            }
-            if ((*iter)[0].contains("value") == false) {
-              throw std::runtime_error("properties should contain value");
-            }
-            input_props_e.back()["property_new_value"] =
-                json_to_string((*iter)[0]["value"]);
-          } else {
-            input_props_e.back()[input_property] = json_to_string(*iter);
           }
+          if (input_property != "properties") {
+            input_props_e.back()[input_property] = json_to_string(*iter);
+            continue;
+          }
+          // properties
+          if ((*iter).is_array() == false) {
+            throw std::runtime_error("properties should be an array");
+          }
+          if ((*iter).size() != 1) {
+            throw std::runtime_error("size should be 1(only support single property edge)");
+          }
+          if ((*iter)[0].contains("value") == false) {
+            throw std::runtime_error("properties should contain value");
+          }
+          input_props_e.back()["property_new_value"] =
+              json_to_string((*iter)[0]["value"]);
         }
       }
     } catch (std::exception& e) {
@@ -1750,22 +1751,22 @@ seastar::future<admin_query_result> admin_actor::create_edge(
         auto iter = edge_insert.find(input_property);
         if (iter == edge_insert.end()) {
           throw std::runtime_error("missing " + input_property);
-        } 
-        if (input_property == "properties") {
-          if ((*iter).is_array() == false) {
-            throw std::runtime_error("properties should be an array");
-          }
-          if ((*iter).size() != 1) {
-            throw std::runtime_error("size should be 1(only support single property edge)");
-          }
-          if ((*iter)[0].contains("value") == false) {
-            throw std::runtime_error("properties should contain value");
-          }
-          input_props.back()["property_new_value"] =
-              json_to_string((*iter)[0]["value"]);
-        } else {
-          input_props.back()[input_property] = json_to_string(*iter);
         }
+        if (input_property != "properties") {
+          input_props.back()[input_property] = json_to_string(*iter);
+          continue;
+        }
+        if ((*iter).is_array() == false) {
+          throw std::runtime_error("properties should be an array");
+        }
+        if ((*iter).size() != 1) {
+          throw std::runtime_error("size should be 1(only support single property edge)");
+        }
+        if ((*iter)[0].contains("value") == false) {
+          throw std::runtime_error("properties should contain value");
+        }
+        input_props.back()["property_new_value"] =
+            json_to_string((*iter)[0]["value"]);
       }
     }
   } catch (std::exception& e) {

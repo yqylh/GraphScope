@@ -66,11 +66,12 @@ from gs_interactive.models.start_service_request import StartServiceRequest
 from gs_interactive.models.update_procedure_request import UpdateProcedureRequest
 from gs_interactive.models.upload_file_response import UploadFileResponse
 from gs_interactive.models.vertex_request import VertexRequest
+from gs_interactive.models.vertex_edge_request import VertexEdgeRequest
 
 
 class EdgeInterface(metaclass=ABCMeta):
     @abstractmethod
-    def add_edge(self, graph_id: StrictStr, edge_request: EdgeRequest) -> Result[str]:
+    def add_edge(self, graph_id: StrictStr, edge_request: List[EdgeRequest]) -> Result[str]:
         raise NotImplementedError
 
     @abstractmethod
@@ -121,7 +122,9 @@ class EdgeInterface(metaclass=ABCMeta):
 class VertexInterface(metaclass=ABCMeta):
     @abstractmethod
     def add_vertex(
-        self, graph_id: StrictStr, vertex_request: VertexRequest
+        self,
+        graph_id: StrictStr,
+        vertex_edge_request: VertexEdgeRequest,
     ) -> Result[StrictStr]:
         raise NotImplementedError
 
@@ -344,7 +347,9 @@ class DefaultSession(Session):
     # implementations of the methods from the interfaces
     ################ Vertex Interfaces ##########
     def add_vertex(
-        self, graph_id: StrictStr, vertex_request: VertexRequest
+        self,
+        graph_id: StrictStr,
+        vertex_edge_request: VertexEdgeRequest,
     ) -> Result[StrictStr]:
         raise NotImplementedError
 
@@ -374,7 +379,7 @@ class DefaultSession(Session):
         raise NotImplementedError
 
     ################ Edge Interfaces ##########
-    def add_edge(self, graph_id: StrictStr, edge_request: EdgeRequest) -> Result[str]:
+    def add_edge(self, graph_id: StrictStr, edge_request: List[EdgeRequest]) -> Result[str]:
         raise NotImplementedError
 
     def delete_edge(

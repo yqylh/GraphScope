@@ -1427,8 +1427,10 @@ seastar::future<admin_query_result> admin_actor::create_vertex(
         gs::StatusCode::InvalidSchema,
         "fail to insert vertex/edge : " + std::string(e.what()));
   }
+  nlohmann::json result;
+  result["message"] = "Vertex data is successfully inserted";
   return seastar::make_ready_future<admin_query_result>(
-      gs::Result<seastar::sstring>("success"));
+      gs::Result<seastar::sstring>(result.dump()));
 }
 
 seastar::future<admin_query_result> admin_actor::create_edge(
@@ -1472,8 +1474,10 @@ seastar::future<admin_query_result> admin_actor::create_edge(
     return errorResponse(gs::StatusCode::InvalidSchema,
                          "fail to insert edge : " + std::string(e.what()));
   }
+  nlohmann::json result;
+  result["message"] = "Edge is successfully inserted";
   return seastar::make_ready_future<admin_query_result>(
-      gs::Result<seastar::sstring>("success"));
+      gs::Result<seastar::sstring>(result.dump()));
 }
 
 seastar::future<admin_query_result> admin_actor::update_vertex(
@@ -1509,8 +1513,10 @@ seastar::future<admin_query_result> admin_actor::update_vertex(
     return errorResponse(gs::StatusCode::InvalidSchema,
                          "fail to update vertex : " + std::string(e.what()));
   }
+  nlohmann::json result;
+  result["message"] = "Successfully update Vertex";
   return seastar::make_ready_future<admin_query_result>(
-      gs::Result<seastar::sstring>("success"));
+      gs::Result<seastar::sstring>(result.dump()));
 }
 seastar::future<admin_query_result> admin_actor::update_edge(
     graph_management_param&& param) {
@@ -1545,8 +1551,10 @@ seastar::future<admin_query_result> admin_actor::update_edge(
     return errorResponse(gs::StatusCode::InvalidSchema,
                          "fail to update edge : " + std::string(e.what()));
   }
+  nlohmann::json result;
+  result["message"] = "Successfully update Edge";
   return seastar::make_ready_future<admin_query_result>(
-      gs::Result<seastar::sstring>("success"));
+      gs::Result<seastar::sstring>(result.dump()));
 }
 
 seastar::future<admin_query_result> admin_actor::get_vertex(

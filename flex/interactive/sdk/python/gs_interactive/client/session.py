@@ -17,7 +17,8 @@
 #
 
 from abc import ABCMeta, abstractmethod
-from typing import Annotated, Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
+from typing_extensions import Annotated
 
 from pydantic import Field, StrictBytes, StrictStr
 
@@ -97,6 +98,9 @@ class EdgeInterface(metaclass=ABCMeta):
     def get_edge(
         self,
         graph_id: StrictStr,
+        edge_label: Annotated[
+            StrictStr, Field(description="The label name of edge.")
+        ],
         src_label: Annotated[
             StrictStr, Field(description="The label name of src vertex.")
         ],
@@ -351,7 +355,12 @@ class DefaultSession(Session):
         graph_id: StrictStr,
         vertex_edge_request: VertexEdgeRequest,
     ) -> Result[StrictStr]:
-        raise NotImplementedError
+        try:
+            api_response = self._vertex_api.add_vertex_with_http_info(graph_id, vertex_edge_request)
+            return Result.from_response(api_response)
+        except Exception as e:
+            return Result.from_exception(e)
+        
 
     def delete_vertex(
         self,
@@ -371,16 +380,29 @@ class DefaultSession(Session):
             Any, Field(description="The primary key value of vertex.")
         ],
     ) -> Result[VertexRequest]:
-        raise NotImplementedError
+        try:
+            api_response = self._vertex_api.get_vertex_with_http_info(graph_id, label, primary_key_value)
+            return Result.from_response(api_response)
+        except Exception as e:
+            return Result.from_exception(e)
+
 
     def update_vertex(
         self, graph_id: StrictStr, vertex_request: VertexRequest
     ) -> Result[str]:
-        raise NotImplementedError
+        try:
+            api_response = self._vertex_api.update_vertex_with_http_info(graph_id, vertex_request)
+            return Result.from_response(api_response)
+        except Exception as e:
+            return Result.from_exception(e)
 
     ################ Edge Interfaces ##########
     def add_edge(self, graph_id: StrictStr, edge_request: List[EdgeRequest]) -> Result[str]:
-        raise NotImplementedError
+        try:
+            api_response = self._edge_api.add_edge_with_http_info(graph_id, edge_request)
+            return Result.from_response(api_response)
+        except Exception as e:
+            return Result.from_exception(e)
 
     def delete_edge(
         self,
@@ -403,6 +425,9 @@ class DefaultSession(Session):
     def get_edge(
         self,
         graph_id: StrictStr,
+        edge_label: Annotated[
+            StrictStr, Field(description="The label name of edge.")
+        ],
         src_label: Annotated[
             StrictStr, Field(description="The label name of src vertex.")
         ],
@@ -416,12 +441,22 @@ class DefaultSession(Session):
             Any, Field(description="The primary key value of dst vertex.")
         ],
     ) -> Result[Union[None, EdgeRequest]]:
-        raise NotImplementedError
+        try:
+            api_response = self._edge_api.get_edge_with_http_info(
+                graph_id, edge_label, src_label, src_primary_key_value, dst_label, dst_primary_key_value
+            )
+            return Result.from_response(api_response)
+        except Exception as e:
+            return Result.from_exception(e)
 
     def update_edge(
         self, graph_id: StrictStr, edge_request: EdgeRequest
     ) -> Result[str]:
-        raise NotImplementedError
+        try:
+            api_response = self._edge_api.update_edge_with_http_info(graph_id, edge_request)
+            return Result.from_response(api_response)
+        except Exception as e:
+            return Result.from_exception(e)
 
     ################ Graph Interfaces ##########
     def create_graph(self, graph: CreateGraphRequest) -> Result[CreateGraphResponse]:
